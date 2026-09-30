@@ -6,8 +6,9 @@ FarmSaarthi is an open-source agricultural intelligence platform helping smallho
 
 ## 🔗 Links
 
-- **Live Demo:** []
-- **Demo Video:** []
+- **Live Demo:** [(https://farmsaarthi.netlify.app)
+or (https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--d5306e6f.local-credentialless.webcontainer-api.io/login)]
+- **Demo Video:** [https://drive.google.com/file/d/167sN1TJDb4DX63ZZZFe9d3KvOIPhbPIC/view?usp=sharing]
 
 ## 🎯 The Problem
 
