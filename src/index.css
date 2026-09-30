@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply font-sans bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/60 rounded-3xl shadow-sm shadow-black/5;
+  }
+  .ios-card {
+    @apply bg-white rounded-3xl shadow-sm shadow-black/5 border border-gray-100;
+  }
+  .ios-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl font-medium transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .ios-input {
+    @apply w-full rounded-2xl border border-gray-200 bg-white/80 px-4 py-3.5 text-base outline-none transition-all duration-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-200 placeholder:text-gray-400;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
