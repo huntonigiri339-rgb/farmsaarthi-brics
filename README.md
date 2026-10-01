@@ -11,6 +11,7 @@ FarmSaarthi is a production-quality, open-source React web application built for
    [https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--d5306e6f.local-credentialless.webcontainer-api.io/dashboard]
 
 
+
 ## 🌟 Features & Capability Matrix
 
 1. **Authentication (Firebase Auth)**:
