@@ -112,3 +112,4 @@ const firebaseConfig = {
 3. **Context Passport**: Demonstrative governance framework for cross-border knowledge sharing.
 4. **Official Status**: FarmSaarthi is a research prototype and not an officially endorsed BRICS intergovernmental standard.
 5. **No Guarantees**: No claims are made regarding yield accuracy, financial impact, or agronomic outcomes.
+ 
