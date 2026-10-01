@@ -6,6 +6,12 @@ FarmSaarthi is a production-quality, open-source React web application built for
 
 ---
 
+
+## Live Demo:
+   [https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--d5306e6f.local-credentialless.webcontainer-api.io/dashboard]
+
+
+
 ## 🌟 Features & Capability Matrix
 
 1. **Authentication (Firebase Auth)**:
@@ -107,3 +113,4 @@ const firebaseConfig = {
 3. **Context Passport**: Demonstrative governance framework for cross-border knowledge sharing.
 4. **Official Status**: FarmSaarthi is a research prototype and not an officially endorsed BRICS intergovernmental standard.
 5. **No Guarantees**: No claims are made regarding yield accuracy, financial impact, or agronomic outcomes.
+ 
