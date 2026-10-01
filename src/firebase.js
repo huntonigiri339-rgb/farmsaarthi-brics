@@ -3,13 +3,15 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "farmsaarthi-demo.firebaseapp.com",
-  projectId: "farmsaarthi-demo",
-  storageBucket: "farmsaarthi-demo.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890"
+  apiKey: "AIzaSyD9BYd2bOM6DKhpBA3CAsBO7ENni7QzgQQ",
+  authDomain: "farmsaarthi-brics.firebaseapp.com",
+  projectId: "farmsaarthi-brics",
+  storageBucket: "farmsaarthi-brics.firebasestorage.app",
+  messagingSenderId: "461668631212",
+  appId: "1:461668631212:web:412c7a945a6d43b1809509",
+  measurementId: "G-5SPZEWJ8T9"
 };
 
 // Initialize Firebase app safely
