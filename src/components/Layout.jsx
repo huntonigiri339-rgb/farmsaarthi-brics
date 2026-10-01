@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -34,7 +34,7 @@ const mobileNavItems = [
   { to: "/field-memory", label: "Memory", icon: BookOpen }
 ];
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function Layout({ children }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

@@ -5,7 +5,12 @@ import {
   Users,
   HeartHandshake,
   ExternalLink,
-  AlertOctagon
+  AlertOctagon,
+  ArrowRight,
+  Database,
+  Layers,
+  ShieldCheck,
+  CheckCircle2
 } from "lucide-react";
 import Card from "../components/Card";
 
@@ -128,7 +133,7 @@ export default function About() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 relative">
-          {flowSteps.map((s) => (
+          {flowSteps.map((s, idx) => (
             <div key={s.step} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 relative flex flex-col justify-between">
               <div>
                 <span className="w-7 h-7 rounded-xl bg-brand-600 text-white font-bold text-xs flex items-center justify-center mb-3 shadow-sm">

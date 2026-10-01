@@ -1,4 +1,4 @@
-import React, { useState, useRef, ChangeEvent, DragEvent } from "react";
+import React, { useState, useRef } from "react";
 import {
   Upload,
   Camera,
@@ -7,29 +7,31 @@ import {
   AlertTriangle,
   CheckCircle2,
   PhoneCall,
+  Loader2,
   RefreshCw,
-  Info
+  Info,
+  ShieldAlert
 } from "lucide-react";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { useToast } from "../components/Toast";
-import { diagnosisHigh, diagnosisLow, DiagnosisData } from "../data/mockData";
-import { collection, addDoc } from "firebase/firestore";
+import { diagnosisHigh, diagnosisLow } from "../data/mockData";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function CropHealth() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
-  const [result, setResult] = useState<DiagnosisData | null>(null);
+  const [result, setResult] = useState(null);
   const [lowConfidence, setLowConfidence] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
   const { showToast } = useToast();
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = (file) => {
     if (!file) return;
 
     const validTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -49,17 +51,17 @@ export default function CropHealth() {
     setResult(null);
   };
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = (e) => {
     e.preventDefault();
     setIsDragOver(false);
   };
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -92,6 +94,7 @@ export default function CropHealth() {
 
       if (!lowConfidence) {
         showToast("Crop diagnosis complete!", "success");
+        // Save to Firestore fieldMemory
         try {
           await addDoc(collection(db, "fieldMemory"), {
             type: "observation",
@@ -170,7 +173,7 @@ export default function CropHealth() {
           type="file"
           ref={fileInputRef}
           accept="image/jpeg,image/png,image/webp"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+          onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
           className="hidden"
         />
         <input
@@ -178,7 +181,7 @@ export default function CropHealth() {
           ref={cameraInputRef}
           accept="image/*"
           capture="environment"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+          onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
           className="hidden"
         />
 

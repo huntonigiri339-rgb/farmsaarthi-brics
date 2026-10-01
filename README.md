@@ -1,70 +1,109 @@
-# 🌱 FarmSaarthi
+# FarmSaarthi (BRICS Agri-Intelligence Platform)
 
-**Validated Knowledge. Local Advice.**
+> **Validated Knowledge. Local Advice.**
 
-FarmSaarthi is an open-source agricultural intelligence platform helping smallholder farmers access climate-resilient, context-aware guidance — built as a Digital Public Good for BRICS cooperation.
+FarmSaarthi is a production-quality, open-source React web application built for smallholder farmers, agronomists, and extension officers across BRICS countries. It delivers real-time weather forecasts, AI-assisted crop health diagnostics, cross-border knowledge validation ("Context Passport"), and an immutable field memory log.
 
-## 🔗 Links
+---
 
-- **Live Demo:** [(https://farmsaarthi.netlify.app)
-or (https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--d5306e6f.local-credentialless.webcontainer-api.io/login)]
-- **Demo Video:** [https://drive.google.com/file/d/167sN1TJDb4DX63ZZZFe9d3KvOIPhbPIC/view?usp=sharing]
+## 🌟 Features & Capability Matrix
 
-## 🎯 The Problem
+1. **Authentication (Firebase Auth)**:
+   - Email/password Sign In & Sign Up with automated Firestore user profile provisioning (`users` collection).
+   - One-click Google Sign-In support.
+   - Protected Routing wrapping all inner pages with auto-redirection to `/login`.
 
-Small and marginal farmers across emerging economies lack access to data-driven agricultural guidance. They rely on district-level forecasts that don't fit their field, and institutions cannot easily share validated knowledge across borders.
+2. **Theme System (Light / Dark / System)**:
+   - Full 3-way Theme Switcher (`Sun`, `Moon`, `Monitor`) integrated into the header.
+   - Detects `window.matchMedia('(prefers-color-scheme: dark)')` when set to `system`.
+   - Persists user choice in `localStorage`.
+   - Smooth 200ms transitions adapting all cards, text, inputs, and borders.
 
-FarmSaarthi addresses two gaps:
-1. Farmers get advice that doesn't fit their field
-2. Institutions cannot share what they learn across borders
+3. **Live Weather Engine (Open-Meteo API)**:
+   - Fetches live hourly & 7-day meteorological data without API keys.
+   - "Use My Location" real GPS geolocation flow with fallback to Dharwad, Karnataka (`15.3647, 75.124`).
+   - Hourly temperature and relative humidity progression graph powered by **Recharts**.
 
-## 💡 Our Approach
+4. **Crop Health Vision Diagnostics**:
+   - Working drag-and-drop file upload, file validation (JPG/PNG/WebP, <10MB), and mobile camera capture (`capture="environment"`).
+   - Simulated AI vision diagnostic engine returning confidence score (with progress bar) and cited evidence list (ICAR, Google AMED API).
+   - "Switch to Low Confidence Scenario" toggle demonstrating fallback handling ("Insufficient Evidence" state & "Contact Expert" toast notification).
+   - Automated save of high-confidence diagnoses to Firestore `fieldMemory` collection.
 
-**Local data stays local. Validated knowledge moves. Farmers get advice they can use — and know when to seek a human.**
+5. **Context Passport (Cross-Border Knowledge Validation)**:
+   - Compares agronomic assertions from source countries (e.g. India) with target field conditions (e.g. Brazil).
+   - Sequential checkmark matching animation across crop type, growth stage, climate, and geography.
+   - Interactive 3-outcome switcher (`ACCEPT`, `LOCAL REVIEW REQUIRED`, `REJECT`) for interactive demonstration.
 
-Three pillars:
+6. **Field Memory Log**:
+   - Chronological vertical timeline with distinct iconography (`Eye`, `MessageSquare`, `CheckCircle`, `TrendingUp`).
+   - Real-time fetching and saving to Firestore `fieldMemory` collection.
+   - Modal form for creating new observation, advisory, action, or outcome records.
 
-- **Intelligence** — AI crop analysis + real weather data + local context
-- **Cooperation** — Cross-border knowledge validation via Context Passport
-- **Inclusion** — Voice-first, offline-capable, multi-channel access
+7. **Responsive iOS-Style UI/UX**:
+   - Desktop (>1024px): Fixed left sidebar with icons and text labels.
+   - Tablet (768px - 1024px): Collapsible header drawer menu.
+   - Mobile (<768px): iOS bottom tab bar with touch targets ≥ 44px.
+   - Glassmorphic backdrop blur cards, modern typography (Inter), curated deep green, sky blue, and amber color palettes.
 
-## 🚀 Key Features
+---
 
-- **Real Weather Data** — Live forecasts from Open-Meteo based on your location
-- **Crop Health Diagnostics** — Upload a photo, get a diagnosis with confidence score
-- **Context Passport** — Cross-border assertion validation (India ↔ Brazil)
-- **Safety Abstention** — System says "Insufficient Evidence" when unsure
-- **Field Memory** — Timeline of observations, advisories, actions, and outcomes
-- **Dark / Light / System Themes** — Full theme support
-- **Responsive Design** — Works on desktop, tablet, and mobile
-- **Firebase Authentication** — Real login with email/password and Google
+## 🚀 Quick Start Guide
 
-## 🛠️ Technology Stack
+### Prerequisites
+- Node.js v18.0.0+
+- npm or pnpm or yarn
 
-| Layer | Choice |
-|---|---|
-| Frontend | React 18, Vite, TypeScript |
-| Styling | Tailwind CSS |
-| Icons | Lucide React |
-| Weather API | Open-Meteo (no key required) |
-| Authentication | Firebase Auth |
-| Database | Firebase Firestore |
-| Hosting | Netlify |
-
-## ⚠️ Prototype Limitations
-
-This is a 72-hour prototype. Please note:
-
-- The AI diagnosis is **simulated** with demo data. It is not a validated diagnostic model.
-- Weather data is **real** (Open-Meteo).
-- The Context Passport logic is **demonstrative** — not a production protocol.
-- This is **not** an official BRICS standard.
-- No accuracy, yield, or impact claims are made.
-
-## 🏃 Run Locally
-
+### Installation
 ```bash
-git clone https://github.com/your-username/farmsaarthi.git
-cd farmsaarthi
+# Clone repository
+git clone https://github.com/farmsaarthi/farmsaarthi-brics.git
+cd farmsaarthi-brics
+
+# Install dependencies
 npm install
+
+# Run dev server
 npm run dev
+```
+
+---
+
+## 🔑 Firebase Configuration (`src/firebase.js`)
+
+Replace the placeholder values in `src/firebase.js` with your active Firebase project configuration from the [Firebase Console](https://console.firebase.google.com/):
+
+```js
+const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "farmsaarthi-demo.firebaseapp.com",
+  projectId: "farmsaarthi-demo",
+  storageBucket: "farmsaarthi-demo.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890"
+};
+```
+
+> **Note**: If placeholder keys are detected, FarmSaarthi automatically falls back to an offline Demo Mode session so you can test all UI flows instantly.
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend**: React 18, Vite 5, TypeScript
+- **Styling**: Tailwind CSS, Vanilla CSS custom properties, Glassmorphism
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **Routing**: React Router DOM v6
+- **Auth & DB**: Firebase Authentication & Cloud Firestore
+- **Weather API**: Open-Meteo REST API
+
+---
+
+## ⚠️ Prototype Limitations & Disclaimer
+
+1. **Simulated AI Diagnosis**: Crop disease diagnostics are simulated for prototype demonstration. Cited references include ICAR Geoportal & Google AMED API.
+2. **Weather Data**: Weather forecasts use real live Open-Meteo APIs.
+3. **Context Passport**: Demonstrative governance framework for cross-border knowledge sharing.
+4. **Official Status**: FarmSaarthi is a research prototype and not an officially endorsed BRICS intergovernmental standard.
+5. **No Guarantees**: No claims are made regarding yield accuracy, financial impact, or agronomic outcomes.

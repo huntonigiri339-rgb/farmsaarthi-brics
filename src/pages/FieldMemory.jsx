@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BookOpen,
   Eye,
@@ -14,11 +14,11 @@ import {
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { useToast } from "../components/Toast";
-import { fieldMemoryDemo, FieldMemoryItem } from "../data/mockData";
+import { fieldMemoryDemo } from "../data/mockData";
 import { collection, query, orderBy, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap = {
   observation: Eye,
   advisory: MessageSquare,
   action: CheckCircle,
@@ -26,12 +26,12 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export default function FieldMemory() {
-  const [entries, setEntries] = useState<FieldMemoryItem[]>([]);
+  const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [type, setType] = useState<"observation" | "advisory" | "action" | "outcome">("observation");
+  const [type, setType] = useState("observation");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tag, setTag] = useState("Field Check");
@@ -47,7 +47,7 @@ export default function FieldMemory() {
         const fetched = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
-        })) as FieldMemoryItem[];
+        }));
         setEntries(fetched);
       } else {
         setEntries(fieldMemoryDemo);
@@ -64,7 +64,7 @@ export default function FieldMemory() {
     fetchFieldMemory();
   }, []);
 
-  const handleAddEntry = async (e: FormEvent) => {
+  const handleAddEntry = async (e) => {
     e.preventDefault();
     if (!title || !description) {
       showToast("Please enter a title and description.", "error");
@@ -82,14 +82,14 @@ export default function FieldMemory() {
 
     try {
       const docRef = await addDoc(collection(db, "fieldMemory"), newEntry);
-      setEntries((prev) => [{ id: docRef.id, icon: "Eye", ...newEntry }, ...prev]);
+      setEntries((prev) => [{ id: docRef.id, ...newEntry }, ...prev]);
       showToast("Field Memory entry saved!", "success");
       setShowModal(false);
       setTitle("");
       setDescription("");
     } catch (err) {
       console.warn("Firestore add error, adding locally for demo:", err);
-      const demoEntry: FieldMemoryItem = { id: "local-" + Date.now(), icon: "Eye", ...newEntry };
+      const demoEntry = { id: "local-" + Date.now(), ...newEntry };
       setEntries((prev) => [demoEntry, ...prev]);
       showToast("Saved to local timeline (Demo mode)", "success");
       setShowModal(false);
@@ -178,6 +178,11 @@ export default function FieldMemory() {
                         <Tag className="w-3 h-3" />
                         {item.tag || "General"}
                       </span>
+                      {item.isSimulated && (
+                        <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-300/40">
+                          Demo Entry
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -203,7 +208,7 @@ export default function FieldMemory() {
                 <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Entry Type</label>
                 <select
                   value={type}
-                  onChange={(e) => setType(e.target.value as any)}
+                  onChange={(e) => setType(e.target.value)}
                   className="w-full p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium outline-none"
                 >
                   <option value="observation">Observation (Eye)</option>

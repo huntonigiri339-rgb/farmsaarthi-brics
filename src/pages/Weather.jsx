@@ -22,16 +22,16 @@ import {
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { useToast } from "../components/Toast";
-import { getWeather, DEFAULT_LOCATION, getCurrentUserCoordinates, WeatherData } from "../services/weather";
+import { getWeather, DEFAULT_LOCATION, getCurrentUserCoordinates } from "../services/weather";
 
 export default function WeatherPage() {
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [locationName, setLocationName] = useState("Dharwad, Karnataka");
   const [isLiveGps, setIsLiveGps] = useState(false);
   const { showToast } = useToast();
 
-  const fetchWeatherData = async (lat: number, lon: number, name: string | null = null) => {
+  const fetchWeatherData = async (lat, lon, name = null) => {
     setLoading(true);
     try {
       const data = await getWeather(lat, lon);
@@ -39,7 +39,7 @@ export default function WeatherPage() {
       if (name) {
         setLocationName(name);
       }
-    } catch (err: any) {
+    } catch (err) {
       showToast(`Weather error: ${err.message}`, "error");
     } finally {
       setLoading(false);
@@ -53,7 +53,7 @@ export default function WeatherPage() {
       setIsLiveGps(true);
       await fetchWeatherData(coords.lat, coords.lon, "Current GPS Location");
       showToast("Weather updated for your live location!", "success");
-    } catch {
+    } catch (err) {
       setIsLiveGps(false);
       showToast("Location access denied. Showing weather for Dharwad, Karnataka.", "amber");
       await fetchWeatherData(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon, DEFAULT_LOCATION.name);

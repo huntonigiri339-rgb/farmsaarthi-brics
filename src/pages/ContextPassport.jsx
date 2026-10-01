@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
 import {
+  ShieldCheck,
   Check,
   AlertTriangle,
   XCircle,
+  ArrowRight,
   Globe2,
+  Sparkles,
   CheckCircle2,
+  HelpCircle,
   FileCheck
 } from "lucide-react";
 import Card from "../components/Card";
+import Button from "../components/Button";
 import { contextPassports } from "../data/mockData";
 import { useToast } from "../components/Toast";
 
 export default function ContextPassport() {
-  const [activeStateKey, setActiveStateKey] = useState<"review" | "accept" | "reject">("review");
+  const [activeStateKey, setActiveStateKey] = useState("review");
   const [animatedIndex, setAnimatedIndex] = useState(0);
   const { showToast } = useToast();
 
   const activePassport = contextPassports[activeStateKey] || contextPassports.review;
 
+  // Trigger checkmark animation when state switches
   useEffect(() => {
     setAnimatedIndex(0);
     const interval = setInterval(() => {
@@ -31,12 +37,12 @@ export default function ContextPassport() {
     return () => clearInterval(interval);
   }, [activeStateKey]);
 
-  const handleSwitchState = (key: "review" | "accept" | "reject") => {
+  const handleSwitchState = (key) => {
     setActiveStateKey(key);
     showToast(`Switched Context Passport demo state to: ${key.toUpperCase()}`, "info");
   };
 
-  const getVerdictStyles = (status: string) => {
+  const getVerdictStyles = (status) => {
     switch (status) {
       case "ACCEPT":
         return {

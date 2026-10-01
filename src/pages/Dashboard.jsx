@@ -9,26 +9,30 @@ import {
   Droplets,
   Wind,
   MapPin,
+  Clock,
   Sparkles,
+  AlertTriangle,
   ChevronRight
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { getWeather, DEFAULT_LOCATION, getCurrentUserCoordinates, WeatherData } from "../services/weather";
-import { fieldMemoryDemo, FieldMemoryItem } from "../data/mockData";
+import { getWeather, DEFAULT_LOCATION, getCurrentUserCoordinates } from "../services/weather";
+import { fieldMemoryDemo } from "../data/mockData";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import Card from "../components/Card";
+import Button from "../components/Button";
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherData, setWeatherData] = useState(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [locationName, setLocationName] = useState("Dharwad, Karnataka");
-  const [recentActivities, setRecentActivities] = useState<FieldMemoryItem[]>(fieldMemoryDemo);
+  const [recentActivities, setRecentActivities] = useState(fieldMemoryDemo);
   const [isLiveLocation, setIsLiveLocation] = useState(false);
 
   useEffect(() => {
     async function loadInitialData() {
+      // 1. Fetch Weather
       try {
         try {
           const coords = await getCurrentUserCoordinates();
@@ -36,7 +40,7 @@ export default function Dashboard() {
           setWeatherData(data);
           setLocationName("Your Live Location");
           setIsLiveLocation(true);
-        } catch {
+        } catch (geoErr) {
           const data = await getWeather(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon);
           setWeatherData(data);
           setLocationName(DEFAULT_LOCATION.name);
@@ -48,11 +52,12 @@ export default function Dashboard() {
         setWeatherLoading(false);
       }
 
+      // 2. Fetch Recent Activities from Firestore if available
       try {
         const q = query(collection(db, "fieldMemory"), orderBy("timestamp", "desc"), limit(5));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as FieldMemoryItem[];
+          const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           setRecentActivities(items);
         }
       } catch (dbErr) {
@@ -69,28 +74,32 @@ export default function Dashboard() {
       subtitle: "AI leaf stress & pest diagnosis",
       icon: Leaf,
       to: "/crop-health",
-      color: "from-emerald-500 to-teal-600"
+      color: "from-emerald-500 to-teal-600",
+      textColor: "text-emerald-600 dark:text-emerald-400"
     },
     {
       title: "Weather",
       subtitle: "7-day & hourly Open-Meteo forecast",
       icon: CloudSun,
       to: "/weather",
-      color: "from-sky-500 to-blue-600"
+      color: "from-sky-500 to-blue-600",
+      textColor: "text-sky-600 dark:text-sky-400"
     },
     {
       title: "Context Passport",
       subtitle: "Cross-border assertion check",
       icon: ShieldCheck,
       to: "/passport",
-      color: "from-amber-500 to-orange-600"
+      color: "from-amber-500 to-orange-600",
+      textColor: "text-amber-600 dark:text-amber-400"
     },
     {
       title: "Field Memory",
       subtitle: "Historical field logs & timeline",
       icon: BookOpen,
       to: "/field-memory",
-      color: "from-indigo-500 to-purple-600"
+      color: "from-indigo-500 to-purple-600",
+      textColor: "text-indigo-600 dark:text-indigo-400"
     }
   ];
 
@@ -192,7 +201,7 @@ export default function Dashboard() {
         </div>
       </Card>
 
-      {/* Quick Action Grid */}
+      {/* Quick Action Grid (2x2 Mobile, 4-col Desktop) */}
       <div>
         <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-4">

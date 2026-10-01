@@ -4,12 +4,7 @@ export const DEFAULT_LOCATION = {
   name: "Dharwad, Karnataka, India"
 };
 
-export interface WeatherInfo {
-  label: string;
-  icon: string;
-}
-
-export const WEATHER_CODES: Record<number, WeatherInfo> = {
+export const WEATHER_CODES = {
   0: { label: "Clear Sky", icon: "Sun" },
   1: { label: "Mainly Clear", icon: "Sun" },
   2: { label: "Partly Cloudy", icon: "CloudSun" },
@@ -32,48 +27,11 @@ export const WEATHER_CODES: Record<number, WeatherInfo> = {
   96: { label: "Thunderstorm with Hail", icon: "CloudLightning" }
 };
 
-export function getWeatherInfo(code: number): WeatherInfo {
+export function getWeatherInfo(code) {
   return WEATHER_CODES[code] || { label: "Cloudy", icon: "Cloud" };
 }
 
-export interface CurrentWeatherData {
-  temp: number;
-  apparentTemp: number;
-  humidity: number;
-  windSpeed: number;
-  precipitation: number;
-  weatherCode: number;
-  info: WeatherInfo;
-}
-
-export interface DailyForecastData {
-  date: string;
-  dayName: string;
-  tempMax: number;
-  tempMin: number;
-  precipitation: number;
-  weatherCode: number;
-  info: WeatherInfo;
-}
-
-export interface HourlyForecastData {
-  times: string[];
-  temperatures: number[];
-  humidities: number[];
-  precipitations: number[];
-  windSpeeds: number[];
-}
-
-export interface WeatherData {
-  timezone: string;
-  current: CurrentWeatherData;
-  daily: DailyForecastData[];
-  hourly: HourlyForecastData;
-  latitude: number;
-  longitude: number;
-}
-
-export async function getWeather(lat: number, lon: number): Promise<WeatherData> {
+export async function getWeather(lat, lon) {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
 
   const response = await fetch(url);
@@ -83,7 +41,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData>
 
   const data = await response.json();
 
-  const current: CurrentWeatherData = {
+  const current = {
     temp: Math.round(data.current?.temperature_2m ?? 24),
     apparentTemp: Math.round(data.current?.apparent_temperature ?? 25),
     humidity: Math.round(data.current?.relative_humidity_2m ?? 65),
@@ -93,7 +51,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData>
     info: getWeatherInfo(data.current?.weather_code ?? 0)
   };
 
-  const daily: DailyForecastData[] = (data.daily?.time || []).map((dateStr: string, idx: number) => ({
+  const daily = (data.daily?.time || []).map((dateStr, idx) => ({
     date: dateStr,
     dayName: new Date(dateStr).toLocaleDateString("en-US", { weekday: "short" }),
     tempMax: Math.round(data.daily.temperature_2m_max[idx]),
@@ -104,11 +62,11 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData>
   }));
 
   const nowHour = new Date().getHours();
-  const rawHourlyTime: string[] = data.hourly?.time || [];
+  const rawHourlyTime = data.hourly?.time || [];
   const startIdx = Math.max(0, rawHourlyTime.findIndex(t => new Date(t).getHours() === nowHour));
   const hourlySliceCount = 24;
 
-  const hourly: HourlyForecastData = {
+  const hourly = {
     times: rawHourlyTime.slice(startIdx, startIdx + hourlySliceCount).map(t =>
       new Date(t).toLocaleTimeString("en-US", { hour: "numeric", hour12: true })
     ),
@@ -128,7 +86,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData>
   };
 }
 
-export function getCurrentUserCoordinates(): Promise<{ lat: number; lon: number; isRealLocation: boolean }> {
+export function getCurrentUserCoordinates() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error("Geolocation not supported by browser."));

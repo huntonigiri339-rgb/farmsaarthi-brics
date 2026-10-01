@@ -1,6 +1,6 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sprout, Mail, Lock, ArrowRight } from "lucide-react";
+import { Sprout, Mail, Lock, ArrowRight, Sparkles } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../components/Toast";
 import Card from "../components/Card";
@@ -17,7 +17,7 @@ export default function Login() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       showToast("Please enter email and password", "error");
@@ -36,7 +36,7 @@ export default function Login() {
         showToast(isSignUp ? "Account created successfully!" : "Signed in successfully!", "success");
         navigate("/dashboard");
       }
-    } catch (err: any) {
+    } catch (err) {
       showToast(err.message || "Authentication failed", "error");
     } finally {
       setLoading(false);
@@ -53,7 +53,7 @@ export default function Login() {
         showToast("Signed in with Google!", "success");
         navigate("/dashboard");
       }
-    } catch (err: any) {
+    } catch (err) {
       showToast(err.message || "Google sign in failed", "error");
     } finally {
       setLoading(false);

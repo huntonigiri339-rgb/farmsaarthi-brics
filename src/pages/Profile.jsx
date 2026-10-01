@@ -1,10 +1,14 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
 import {
+  User,
   Mail,
   MapPin,
   Moon,
   LogOut,
-  Check
+  Info,
+  Check,
+  Shield,
+  Sliders
 } from "lucide-react";
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -16,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user, signOut } = useAuth();
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -25,7 +29,7 @@ export default function Profile() {
   const [lon, setLon] = useState("75.1240");
   const [savingLocation, setSavingLocation] = useState(false);
 
-  const handleSaveLocation = (e: FormEvent) => {
+  const handleSaveLocation = (e) => {
     e.preventDefault();
     setSavingLocation(true);
     setTimeout(() => {

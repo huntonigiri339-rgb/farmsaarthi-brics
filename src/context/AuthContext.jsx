@@ -1,52 +1,33 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
-  User as FirebaseUser
+  GoogleAuthProvider
 } from "firebase/auth";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db, googleProvider } from "../firebase";
 
-export interface AppUser {
-  uid: string;
-  email: string | null;
-  displayName?: string | null;
-  isDemo?: boolean;
-}
+const AuthContext = createContext(null);
 
-interface AuthContextType {
-  user: AppUser | null;
-  loading: boolean;
-  signInWithEmail: (email: string, password: string) => Promise<{ user: AppUser | null; error: string | null }>;
-  signUpWithEmail: (email: string, password: string) => Promise<{ user: AppUser | null; error: string | null }>;
-  signInWithGoogle: () => Promise<{ user: AppUser | null; error: string | null }>;
-  signOut: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AppUser | null>(null);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
-          setUser({
-            uid: currentUser.uid,
-            email: currentUser.email,
-            displayName: currentUser.displayName
-          });
+          setUser(currentUser);
         } else {
+          // Check localStorage for demo mock login session if offline/demo
           const mockUserStr = localStorage.getItem("farmsaarthi_demo_user");
           if (mockUserStr) {
             try {
               setUser(JSON.parse(mockUserStr));
-            } catch {
+            } catch (e) {
               setUser(null);
             }
           } else {
@@ -63,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (mockUserStr) {
         try {
           setUser(JSON.parse(mockUserStr));
-        } catch {
+        } catch (e) {
           setUser(null);
         }
       }
@@ -71,19 +52,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const signInWithEmail = async (email: string, password: string) => {
+  const signInWithEmail = async (email, password) => {
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      const appUser: AppUser = {
-        uid: credential.user.uid,
-        email: credential.user.email,
-        displayName: credential.user.displayName
-      };
-      setUser(appUser);
-      return { user: appUser, error: null };
-    } catch (error: any) {
+      setUser(credential.user);
+      return { user: credential.user, error: null };
+    } catch (error) {
+      console.warn("Firebase Auth Error, using demo mode fallback if placeholder keys", error);
       if (error.code === "auth/invalid-api-key" || error.code === "auth/api-key-not-valid" || auth.app.options.apiKey === "YOUR_API_KEY_HERE") {
-        const demoUser: AppUser = {
+        const demoUser = {
           uid: "demo-user-id-" + Date.now(),
           email: email,
           displayName: email.split("@")[0],
@@ -93,15 +70,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(demoUser);
         return { user: demoUser, error: null };
       }
-      return { user: null, error: error.message || "Failed to sign in" };
+      return { user: null, error: error.message };
     }
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
+  const signUpWithEmail = async (email, password) => {
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
       const newAuthUser = credential.user;
       
+      // Create user document in Firestore users collection
       try {
         await setDoc(doc(db, "users", newAuthUser.uid), {
           email: newAuthUser.email,
@@ -112,16 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn("Firestore user creation note:", dbErr);
       }
 
-      const appUser: AppUser = {
-        uid: newAuthUser.uid,
-        email: newAuthUser.email,
-        displayName: newAuthUser.displayName
-      };
-      setUser(appUser);
-      return { user: appUser, error: null };
-    } catch (error: any) {
+      setUser(newAuthUser);
+      return { user: newAuthUser, error: null };
+    } catch (error) {
       if (error.code === "auth/invalid-api-key" || error.code === "auth/api-key-not-valid" || auth.app.options.apiKey === "YOUR_API_KEY_HERE") {
-        const demoUser: AppUser = {
+        const demoUser = {
           uid: "demo-user-id-" + Date.now(),
           email: email,
           displayName: email.split("@")[0],
@@ -131,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(demoUser);
         return { user: demoUser, error: null };
       }
-      return { user: null, error: error.message || "Failed to create account" };
+      return { user: null, error: error.message };
     }
   };
 
@@ -154,16 +127,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn("Firestore Google user check note:", dbErr);
       }
 
-      const appUser: AppUser = {
-        uid: googleUser.uid,
-        email: googleUser.email,
-        displayName: googleUser.displayName
-      };
-      setUser(appUser);
-      return { user: appUser, error: null };
-    } catch (error: any) {
+      setUser(googleUser);
+      return { user: googleUser, error: null };
+    } catch (error) {
       if (error.code === "auth/invalid-api-key" || error.code === "auth/api-key-not-valid" || auth.app.options.apiKey === "YOUR_API_KEY_HERE" || error.code === "auth/popup-closed-by-user") {
-        const demoUser: AppUser = {
+        const demoUser = {
           uid: "demo-google-user",
           email: "farmer.demo@farmsaarthi.org",
           displayName: "Demo Farmer",
@@ -173,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(demoUser);
         return { user: demoUser, error: null };
       }
-      return { user: null, error: error.message || "Google sign-in failed" };
+      return { user: null, error: error.message };
     }
   };
 
